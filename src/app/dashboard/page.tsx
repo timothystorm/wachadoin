@@ -2,13 +2,22 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { signOut } from '@firebase/auth';
+import { firebaseClientAuth } from '@/app/lib/firebase-client';
 
 const DashboardPage: React.FC = () => {
   const router = useRouter();
 
   const handleLogout = async () => {
-    await fetch('/api/logout', { method: 'POST' });
-    router.push('/login');
+    try {
+      await signOut(firebaseClientAuth);
+      const resp = await fetch('/api/logout', { method: 'POST' });
+
+      if (resp.ok) router.push('/login');
+      else console.error('Logout failed:', await resp.text());
+    } catch (error) {
+      console.error('Logout error', error);
+    }
   };
 
   return (
