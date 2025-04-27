@@ -1,10 +1,13 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
-import Link from 'next/link';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { signInWithEmailAndPassword } from '@firebase/auth';
 import { useRouter } from 'next/navigation';
-import { firebaseClientAuth } from '@/app/lib/firebase-client';
+import { clientAuth } from '@/app/lib/firebase/client';
+import axios from 'axios';
+import { Password } from '@/app/components/ui/Password/Password';
+import { Email } from '@/app/components/ui/Email/Email';
+import SignUpMessage from '@/app/components/ui/SignUpMessage/SignUpMessage';
 
 const LoginPage: React.FC = ({}) => {
   const [email, setEmail] = useState<string>('');
@@ -13,24 +16,17 @@ const LoginPage: React.FC = ({}) => {
   const emailRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
+  useEffect(() => emailRef.current?.focus(), []);
+
   const onLogin = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
 
-    try {
-      const { user } = await signInWithEmailAndPassword(firebaseClientAuth, email, password);
-      const idToken = await user.getIdToken();
-      const resp = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken }),
-      });
-
-      if (resp.ok) router.push('/dashboard');
-      else setError('Login failed');
-    } catch (error) {
-      console.error(error);
-      setError('Incorrect email or password');
-    }
+    // signIn and store token server side
+    return await signInWithEmailAndPassword(clientAuth, email, password)
+      .then(({ user }) => user.getIdToken())
+      .then((idToken) => axios.post('/api/user/login', { idToken }))
+      .then(() => router.push('/dashboard'))
+      .catch((err) => setError(`Could not log in: ${err}`));
   };
 
   return (
@@ -39,23 +35,14 @@ const LoginPage: React.FC = ({}) => {
       className="flex min-h-screen flex-col items-center justify-center bg-gray-900"
     >
       <div className="mb-12 w-96 rounded-lg bg-gray-800 p-10 shadow-xl">
-        <input
-          type="email"
-          autoComplete="email"
-          id="email"
-          placeholder="Email"
-          ref={emailRef}
+        <Email
+          onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="mb-4 w-full rounded bg-gray-700 p-3 text-white placeholder-gray-500 outline-none"
-        ></input>
-
-        <input
-          type="password"
-          placeholder="Password"
+          ref={emailRef}
+        ></Email>
+        <Password
+          onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="mb-4 w-full rounded bg-gray-700 p-3 text-white placeholder-gray-500 outline-none"
         />
 
         {error && <p className="mb-4 text-red-500">{error}</p>}
@@ -68,12 +55,7 @@ const LoginPage: React.FC = ({}) => {
         </button>
       </div>
 
-      <div className="items-center justify-center">
-        Not a member yet?
-        <Link href="/signup" id="signup" className="grow pl-2 text-center text-indigo-600">
-          Sign up.
-        </Link>
-      </div>
+      <SignUpMessage></SignUpMessage>
     </form>
   );
 };

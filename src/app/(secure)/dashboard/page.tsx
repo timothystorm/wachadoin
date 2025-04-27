@@ -3,21 +3,17 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { signOut } from '@firebase/auth';
-import { firebaseClientAuth } from '@/app/lib/firebase-client';
+import { clientAuth } from '@/app/lib/firebase/client';
+import axios from 'axios';
 
 const DashboardPage: React.FC = () => {
   const router = useRouter();
 
-  const handleLogout = async () => {
-    try {
-      await signOut(firebaseClientAuth);
-      const resp = await fetch('/api/logout', { method: 'POST' });
-
-      if (resp.ok) router.push('/login');
-      else console.error('Logout failed:', await resp.text());
-    } catch (error) {
-      console.error('Logout error', error);
-    }
+  const handleLogout = async (): Promise<void> => {
+    await signOut(clientAuth)
+      .then(() => axios.post('/api/user/logout'))
+      .then(() => router.push('/login'))
+      .catch((error) => console.error(`Logout error: ${error}`));
   };
 
   return (

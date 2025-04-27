@@ -1,8 +1,7 @@
 import { FirebaseApp, getApp, getApps, initializeApp } from 'firebase/app';
 import { Auth, initializeAuth } from 'firebase/auth';
-import { inMemoryPersistence } from '@firebase/auth';
 
-const firebaseClient = {
+const client = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
@@ -12,8 +11,6 @@ const firebaseClient = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const firebaseClientApp: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseClient);
-const firebaseClientAuth: Auth = initializeAuth(firebaseClientApp, {
-  persistence: [inMemoryPersistence],
-});
-export { firebaseClientApp, firebaseClientAuth };
+const clientApp: FirebaseApp = getApps().length ? getApp() : initializeApp(client);
+const clientAuth: Auth = initializeAuth(clientApp);
+export { clientApp, clientAuth };

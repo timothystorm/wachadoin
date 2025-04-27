@@ -8,7 +8,7 @@ Milestones:
 
     [] - Setup & Learning (5-6 hours)
         [] - Install NextJS, TailwindCSS, Firebase.
-        [] - Add Jest: npm install --save-dev jest @types/jest ts-jest and configure (jest.firebase-client.ts).
+        [] - Add Jest: npm install --save-dev jest @types/jest ts-jest and configure (jest.client.ts).
         [] - Add Storybook: npx storybook init (integrates with NextJS/Tailwind).
         [] - Push a tested "Hello World" PWA to Firebase Hosting.
     [] - Core Features + Unit/UI Tests (8-10 hours)
@@ -70,7 +70,7 @@ Duration: 6-7 weeks (5-7 hours/week, ~35-45 hours total)
 
     Jest:
         Use for unit tests on API routes, Firestore interactions, and utility functions (e.g., distance calc).
-        Setup tip: Mock Firebase with jest-mock or @firebaseClient/rules-unit-testing for Firestore rules.
+        Setup tip: Mock Firebase with jest-mock or @client/rules-unit-testing for Firestore rules.
         Time: ~10-15% of dev time per feature.
     Playwright or Cypress:
         Playwright: Preferred for PWA (better mobile emulation, service worker support). Example: Test auth flow + alert posting in 10-15 lines.

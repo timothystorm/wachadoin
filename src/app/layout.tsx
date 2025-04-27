@@ -25,7 +25,7 @@ export function generateViewport(): Viewport {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${montserrat.className} antialiased`}>
         <section className="mx-auto flex h-lvh w-full flex-col lg:w-[1024px]">
           <main className="grow bg-zinc-100">{children}</main>
